@@ -1,5 +1,6 @@
 from bot import mytoken
 from bot import validation
+from bot import databckend as db
 
 import asyncio
 from aiogram import Bot, Dispatcher, executor, types
@@ -13,6 +14,7 @@ bot = Bot(token=mytoken.API_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 
+DS = db.DataStore('data.csv', ['username', 'birthday'])
 
 class UserState(StatesGroup):
     name = State()
@@ -21,6 +23,9 @@ class UserState(StatesGroup):
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
     await message.answer("I am  BirthDay Reminder BOT")
+@dp.message_handler(commands=['birthdays_today']
+async def birthdays_today(message: types.Message):
+    await message.answer('Birthday today has:')
 
 @dp.message_handler(commands=['remind_birthday'])
 async def user_name(message: types.Message):
@@ -30,7 +35,8 @@ async def user_name(message: types.Message):
 async def get_username(message: types.Message, state: FSMContext):
     await state.update_data(username=message.text)
     await message.answer('Enter person birthday:')
-    await UserState.next() # либо же UserState.adress.set()
+    await UserState.next()
+
 
 @dp.message_handler(state=UserState.birthday)
 async def get_birthday(message: types.Message, state: FSMContext):
@@ -39,6 +45,7 @@ async def get_birthday(message: types.Message, state: FSMContext):
     if validation.is_valid_date(data['birthday']):
         await message.answer(f"Name: {data['username']}\n"
                          f"Birthday: {data['birthday']}")
+        DS.save({'username': data['username'], 'birthday': data['birthday']})
         await state.finish()
     else:
         await message.answer('Invalid data!')
@@ -52,5 +59,5 @@ async def main():
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+     asyncio.run(main())
 
