@@ -23,9 +23,21 @@ class UserState(StatesGroup):
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
     await message.answer("I am  BirthDay Reminder BOT")
-@dp.message_handler(commands=['birthdays_today']
+
+
+@dp.message_handler(commands=['birthdays_today'])
 async def birthdays_today(message: types.Message):
     await message.answer('Birthday today has:')
+    for item in DS.get_today():
+        await message.answer(f"Name: {item['username']}\n"
+                             f"Birthday: {item['birthday']}")
+
+@dp.message_handler(commands=['people'])
+async def birthdays_today(message: types.Message):
+    await message.answer('Birthday today has:')
+    for item in DS.get():
+        await message.answer(f"Name: {item['username']}\n"
+                             f"Birthday: {item['birthday']}")
 
 @dp.message_handler(commands=['remind_birthday'])
 async def user_name(message: types.Message):
