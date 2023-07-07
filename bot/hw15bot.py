@@ -52,8 +52,6 @@ async def get_birthday(message: types.Message, state: FSMContext):
 
 
 
-
-
 async def main():
     await dp.start_polling(bot)
 
